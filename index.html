@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>QuickQR Pro | Free QR Generator & Scanner</title>
+    <meta name="description" content="Generate secure, customizable QR codes for WiFi, URL, WhatsApp, and UPI. Built-in privacy-focused scanner.">
+    <meta name="theme-color" content="#4f46e5">
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔳</text></svg>">
+    
+    <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #4f46e5; 
+            --primary-hover: #4338ca;
+            --secondary: #ec4899; 
+            --bg-gradient: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+            --glass: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --text: #1e293b;
+            --text-light: #64748b;
+            --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+            --blur: blur(12px);
+        }
+
+        [data-theme="dark"] {
+            --primary: #818cf8;
+            --primary-hover: #6366f1;
+            --secondary: #f472b6;
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --glass: rgba(30, 41, 59, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text: #f8fafc;
+            --text-light: #94a3b8;
+            --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        
+        body { 
+            font-family: 'Inter', system-ui, sans-serif; 
+            background: var(--bg-gradient); 
+            color: var(--text); 
+            display: flex; 
+            flex-direction: column; 
+            min-height: 100vh; 
+            transition: background 0.3s ease;
+            overflow-x: hidden;
+        }
+
+        nav { 
+            background: var(--glass);
+            backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 12px 5%;
+            display: flex; justify-content: space-between; align-items: center; 
+            position: sticky; top: 0; z-index: 100;
+        }
+        .logo { font-weight: 800; font-size: 1.3rem; background: linear-gradient(to right, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: flex; align-items: center; gap: 8px; }
+        .theme-toggle { background: transparent; border: 1px solid var(--glass-border); color: var(--text); width: 38px; height: 38px; border-radius: 50%; cursor: pointer; display: grid; place-items: center; }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 20px 15px; flex: 1; width: 100%; }
+
+        .hero { text-align: center; margin: 10px 0 20px; }
+        .hero h1 { font-size: 2rem; margin-bottom: 10px; line-height: 1.2; }
+        .hero p { color: var(--text-light); font-size: 0.95rem; max-width: 600px; margin: 0 auto; padding: 0 10px; }
+
+        .mode-switch { 
+            display: flex; justify-content: center;
+            background: var(--glass); padding: 5px; border-radius: 50px; 
+            border: 1px solid var(--glass-border); margin: 0 auto 20px auto; max-width: fit-content;
+        }
+        .mode-btn { padding: 10px 25px; border-radius: 40px; border: none; font-weight: 600; cursor: pointer; background: transparent; color: var(--text-light); font-size: 0.95rem; }
+        .mode-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+
+        .ad-wrapper {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            width: 100%; margin: 15px 0; overflow: hidden;
+        }
+        .ad-label {
+            font-size: 0.65rem; color: var(--text-light); text-transform: uppercase;
+            letter-spacing: 1px; margin-bottom: 5px; opacity: 0.7;
+        }
+        
+        .grid-layout { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px; align-items: start; }
+
+        .card { 
+            background: var(--glass); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+            border: 1px solid var(--glass-border); border-radius: 20px; padding: 25px; box-shadow: var(--card-shadow);
+            width: 100%; overflow: hidden;
+        }
+        
+        h3 { margin-bottom: 15px; font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; gap: 8px; color: var(--text); }
+
+        .tabs-wrapper { width: 100%; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; -webkit-overflow-scrolling: touch; }
+        .tabs-wrapper::-webkit-scrollbar { display: none; }
+        .input-tabs { display: flex; gap: 8px; width: max-content; }
+        .tab { padding: 8px 14px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05); color: var(--text-light); font-size: 0.9rem; font-weight: 500; white-space: nowrap; cursor: pointer; transition: 0.2s; }
+        .tab.active { border-color: var(--primary); color: var(--primary); background: rgba(79, 70, 229, 0.08); font-weight: 600; }
+
+        .form-group { display: none; }
+        .form-group.show { display: block; animation: fadeIn 0.3s ease; }
+        
+        label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-light); margin: 12px 0 6px; text-transform: uppercase; }
+        input, textarea, select { width: 100%; padding: 12px; border-radius: 10px; border: 2px solid var(--glass-border); background: rgba(255,255,255,0.4); color: var(--text); font-size: 16px; font-family: inherit; outline: none; transition: 0.2s;}
+        [data-theme="dark"] input, [data-theme="dark"] textarea, [data-theme="dark"] select { background: rgba(0,0,0,0.2); }
+        input:focus, textarea:focus { border-color: var(--primary); background: var(--glass); }
+
+        .details-box { margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--glass-border); }
+        .details-summary { cursor: pointer; font-weight: 600; color: var(--primary); display: flex; justify-content: space-between; padding: 5px 0; }
+        .details-content { display: none; padding-top: 10px; animation: slideDown 0.3s ease; }
+        .details-content.open { display: block; }
+
+        /* FIXED QR PREVIEW CONTAINER FOR MOBILE */
+        .qr-preview-container {
+            background: white; border-radius: 15px; padding: 15px; 
+            display: flex; justify-content: center; align-items: center; 
+            min-height: 280px; width: 100%; box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
+            box-sizing: border-box; overflow: hidden;
+        }
+        #canvas-wrapper { 
+            display: flex; justify-content: center; align-items: center; 
+            width: 100%; max-width: 100%; 
+        }
+        /* Forces QR code to shrink gracefully and never overflow */
+        #canvas-wrapper canvas, #canvas-wrapper svg { 
+            width: 100% !important; 
+            max-width: 280px !important; 
+            height: auto !important; 
+            display: block;
+        }
+        
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .btn { padding: 12px; border-radius: 10px; border: none; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: 0.2s; }
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-outline { background: transparent; border: 2px solid var(--glass-border); color: var(--text); }
+
+        #scan-section { max-width: 100%; margin: 0 auto; text-align: center; }
+        #reader { width: 100% !important; max-width: 100%; border-radius: 15px; overflow: hidden; border: 3px solid var(--glass-border); background: #000; margin-bottom: 15px; }
+        #reader video { width: 100% !important; height: auto !important; object-fit: cover; }
+        .scan-result-box { padding: 15px; background: rgba(79, 70, 229, 0.1); border: 1px solid var(--primary); border-radius: 10px; text-align: left; word-wrap: break-word; }
+        
+        footer { margin-top: auto; padding: 25px; text-align: center; border-top: 1px solid var(--glass-border); background: var(--glass); }
+        .footer-links span { margin: 0 10px; color: var(--text-light); cursor: pointer; font-size: 0.85rem; transition: color 0.2s; text-decoration: underline; }
+        .footer-links span:hover { color: var(--primary); }
+        .copyright { margin-top: 15px; font-size: 0.8rem; color: var(--text-light); opacity: 0.7; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 1000; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .modal-overlay.active { display: flex; animation: fadeIn 0.3s; }
+        .modal-content { background: var(--bg-gradient); padding: 30px; border-radius: 20px; max-width: 600px; width: 100%; max-height: 80vh; overflow-y: auto; position: relative; border: 1px solid var(--glass-border); color: var(--text); box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; background: none; border: none; color: var(--text); }
+        .modal-content h2 { margin-top: 0; color: var(--primary); font-size: 1.5rem; margin-bottom: 15px; }
+        .modal-content h4 { margin: 15px 0 5px; }
+        .modal-content p, .modal-content li { font-size: 0.9rem; line-height: 1.5; color: var(--text-light); margin-bottom: 10px; }
+
+        @media (max-width: 768px) {
+            .grid-layout { grid-template-columns: 1fr; gap: 15px; }
+            .preview-card { order: -1; }
+            .hero h1 { font-size: 1.6rem; }
+            .card { padding: 20px; }
+        }
+        .hidden { display: none !important; }
+        @keyframes fadeIn { from{opacity:0; transform:translateY(5px);} to{opacity:1; transform:translateY(0);} }
+        @keyframes slideDown { from{opacity:0; transform:translateY(-10px);} to{opacity:1; transform:translateY(0);} }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="logo">QuickQR Pro</div>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">🌓</button>
+</nav>
+
+<div class="container">
+    <div class="hero">
+        <h1>Generate & Scan QR Codes</h1>
+        <p>Private, secure, and fully optimized for mobile devices.</p>
+    </div>
+
+    <div class="mode-switch">
+        <button class="mode-btn active" id="btn-create" onclick="setMode('create')">Create QR</button>
+        <button class="mode-btn" id="btn-scan" onclick="setMode('scan')">Scan QR</button>
+    </div>
+
+    <div class="ad-wrapper">
+        <div class="ad-label">Advertisement</div>
+        <script> atOptions = { 'key' : '4e2742286a9555754522b5121f5eff10', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} }; </script> 
+        <script src="https://www.highperformanceformat.com/4e2742286a9555754522b5121f5eff10/invoke.js"></script>
+    </div>
+
+    <div class="grid-layout" id="create-section">
+        <div class="card preview-card">
+            <h3>Preview</h3>
+            <div class="qr-preview-container">
+                <div id="canvas-wrapper"></div>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-outline" onclick="dlQR('svg')">⬇ SVG</button>
+                <button class="btn btn-primary" onclick="dlQR('png')">⬇ Download PNG</button>
+            </div>
+            
+            <div class="ad-wrapper" style="margin-top: 20px;">
+                <div class="ad-label">Advertisement</div>
+                <script> atOptions = { 'key' : '5d65150f611e5e9f9e6bb4640dd95379', 'format' : 'iframe', 'height' : 250, 'width' : 300, 'params' : {} }; </script> 
+                <script src="https://www.highperformanceformat.com/5d65150f611e5e9f9e6bb4640dd95379/invoke.js"></script>
+            </div>
+        </div>
+
+        <div class="card input-section">
+            <h3>Configuration</h3>
+            <div class="tabs-wrapper">
+                <div class="input-tabs">
+                    <button class="tab active" onclick="setInputType(this, 'text')">📝 Text</button>
+                    <button class="tab" onclick="setInputType(this, 'url')">🔗 URL</button>
+                    <button class="tab" onclick="setInputType(this, 'wifi')">📶 WiFi</button>
+                    <button class="tab" onclick="setInputType(this, 'whatsapp')">💬 WhatsApp</button>
+                    <button class="tab" onclick="setInputType(this, 'upi')">₹ UPI</button>
+                </div>
+            </div>
+
+            <div id="form-text" class="form-group show">
+                <label>Text Content</label>
+                <textarea id="val-text" rows="3" placeholder="Enter text..." onkeyup="debouncedUpdate()"></textarea>
+            </div>
+            <div id="form-url" class="form-group">
+                <label>Website Link</label>
+                <input type="url" id="val-url" placeholder="https://yourwebsite.com" onkeyup="debouncedUpdate()">
+            </div>
+            <div id="form-wifi" class="form-group">
+                <label>Network Name (SSID)</label> <input id="val-wifi-ssid" placeholder="MyHomeWiFi" onkeyup="debouncedUpdate()">
+                <label>Password</label> <input type="text" id="val-wifi-pass" placeholder="Password" onkeyup="debouncedUpdate()">
+                <label>Security</label> 
+                <select id="val-wifi-enc" onchange="updateQR()">
+                    <option value="WPA">WPA/WPA2</option>
+                    <option value="WEP">WEP</option>
+                    <option value="nopass">None</option>
+                </select>
+            </div>
+            <div id="form-whatsapp" class="form-group">
+                <label>Phone Number</label> <input type="number" id="val-wa-phone" placeholder="919999999999" onkeyup="debouncedUpdate()">
+                <label>Message</label> <input type="text" id="val-wa-msg" placeholder="Hi..." onkeyup="debouncedUpdate()">
+            </div>
+            <div id="form-upi" class="form-group">
+                <label>UPI ID</label> <input id="val-upi-id" placeholder="shop@bank" onkeyup="debouncedUpdate()">
+                <label>Payee Name</label> <input id="val-upi-name" placeholder="Store Name" onkeyup="debouncedUpdate()">
+            </div>
+
+            <div class="details-box">
+                <div class="details-summary" onclick="toggleDetails()">
+                    <span>🎨 Advanced Styling & Logo</span> <span>▼</span>
+                </div>
+                <div class="details-content" id="style-content">
+                    <label>Colors (Dot & Background)</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="color" id="col-dots" value="#1e293b" onchange="updateQR()" style="height:45px; cursor:pointer;">
+                        <input type="color" id="col-bg" value="#ffffff" onchange="updateQR()" style="height:45px; cursor:pointer;">
+                    </div>
+                    <label>Pattern Style</label>
+                    <select id="style-dots" onchange="updateQR()">
+                        <option value="rounded">Rounded (Modern)</option>
+                        <option value="dots">Dots (Soft)</option>
+                        <option value="square">Square (Classic)</option>
+                        <option value="classy">Classy</option>
+                        <option value="extra-rounded">Extra Rounded</option>
+                    </select>
+                    <label>Upload Logo (Center Image)</label>
+                    <input type="file" accept="image/*" onchange="handleLogo(this)" style="padding:8px; border:1px dashed var(--text-light); background: transparent; cursor: pointer;">
+                </div>
+            </div>
+
+            <div class="ad-wrapper" style="margin-top: 25px; border-top: 1px solid var(--glass-border); padding-top: 15px;">
+                <div class="ad-label">Advertisement</div>
+                <script> atOptions = { 'key' : 'ca265f7f26d5815619c7912fb75d69bd', 'format' : 'iframe', 'height' : 300, 'width' : 160, 'params' : {} }; </script> 
+                <script src="https://www.highperformanceformat.com/ca265f7f26d5815619c7912fb75d69bd/invoke.js"></script>
+            </div>
+        </div>
+    </div>
+
+    <div id="scan-section" class="card hidden">
+        <h3>📷 Scan QR Code</h3>
+        <p style="color:var(--text-light); font-size:0.9rem; margin-bottom: 15px;">Point your camera at a QR code</p>
+        <div id="reader"></div>
+        <p id="scan-status" style="font-weight:600; margin-top:10px; color:var(--text-light);">Waiting for camera...</p>
+        
+        <div id="scan-result" class="hidden scan-result-box">
+            <div style="font-size:0.8rem; text-transform:uppercase; color:var(--text-light);">Scanned Data</div>
+            <div id="scan-text" style="font-weight:600; font-size:1.1rem; color:var(--primary); margin:10px 0;"></div>
+            <button class="btn btn-primary" style="width:100%;" onclick="copyScan(this)">Copy Text</button>
+            <button class="btn btn-outline" style="width:100%; margin-top:10px;" onclick="startScanner()">Scan Again</button>
+        </div>
+    </div>
+
+    <div class="ad-wrapper" style="margin-top: 40px;">
+        <div class="ad-label">Advertisement</div>
+        <script> atOptions = { 'key' : 'd289fa4aeed6b8cb6a6593c7b7826415', 'format' : 'iframe', 'height' : 60, 'width' : 468, 'params' : {} }; </script> 
+        <script src="https://www.highperformanceformat.com/d289fa4aeed6b8cb6a6593c7b7826415/invoke.js"></script>
+        
+        <div style="margin-top:15px; width: 100%;">
+            <script async="async" data-cfasync="false" src="https://pl28693387.effectivegatecpm.com/f6271d4fa34bc0c3228b0509d54729b5/invoke.js"></script> 
+            <div id="container-f6271d4fa34bc0c3228b0509d54729b5"></div>
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    <div class="footer-links">
+        <span onclick="openModal('privacyModal')">Privacy Policy</span>
+        <span onclick="openModal('termsModal')">Terms of Service</span>
+    </div>
+    <div class="copyright">&copy; 2026 QuickQR Pro. Built securely for the web.</div>
+</footer>
+
+<div class="modal-overlay" id="privacyModal" onclick="closeModalOutside(event, 'privacyModal')">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeModal('privacyModal')">×</button>
+        <h2>Privacy Policy</h2>
+        <p><strong>Effective Date:</strong> Today</p>
+        <p>At QuickQR Pro, your privacy is our top priority. Because our tool functions completely on the client-side (within your browser), we ensure maximum privacy.</p>
+        <h4>1. Data Collection</h4>
+        <p>We <strong>do not</strong> collect, store, or transmit any data you enter into the QR code generator. All processing happens locally on your device.</p>
+        <h4>2. Camera Permissions</h4>
+        <p>The QR Scanner requires access to your device's camera. This access is strictly used in real-time to decode QR codes. Video feeds are never recorded or sent to any external server.</p>
+        <h4>3. Analytics & Ads</h4>
+        <p>We use third-party ad networks to keep this tool free. These networks may use cookies to serve personalized ads based on your browser settings. We do not control these third-party tracking technologies.</p>
+    </div>
+</div>
+
+<div class="modal-overlay" id="termsModal" onclick="closeModalOutside(event, 'termsModal')">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeModal('termsModal')">×</button>
+        <h2>Terms of Service</h2>
+        <p>By using QuickQR Pro, you agree to the following terms:</p>
+        <h4>1. Permitted Use</h4>
+        <p>You may use this tool to generate and scan QR codes for personal or commercial purposes free of charge.</p>
+        <h4>2. No Warranty</h4>
+        <p>This tool is provided "as is" without any warranties. While we strive for accuracy, we are not responsible for broken links, incorrect UPI payments, or typos generated within your QR codes. Always test your QR code before printing.</p>
+        <h4>3. Lawful Use</h4>
+        <p>You agree not to use this tool to generate malicious QR codes (e.g., linking to malware, phishing sites, or illegal content).</p>
+    </div>
+</div>
+
+<script>
+    let qrObj = null;
+    let logoData = null; 
+    let scanner = null;
+    let isScanning = false;
+    let debounceTimer;
+    let currInput = 'text';
+
+    window.onload = () => {
+        qrObj = new QRCodeStyling({
+            width: 280, height: 280,
+            type: "svg", data: "Welcome to QuickQR",
+            image: "", 
+            dotsOptions: { color: "#1e293b", type: "rounded" },
+            cornersSquareOptions: { type: "extra-rounded" }, 
+            backgroundOptions: { color: "#ffffff" },
+            imageOptions: { crossOrigin: "anonymous", margin: 10 }
+        });
+        qrObj.append(document.getElementById("canvas-wrapper"));
+
+        if(localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.body.setAttribute('data-theme', 'dark');
+        }
+    };
+
+    function updateQR() {
+        let data = "Welcome to QuickQR"; 
+        try {
+            if(currInput === 'text') data = document.getElementById('val-text').value || "Welcome";
+            else if(currInput === 'url') data = document.getElementById('val-url').value || "https://";
+            else if(currInput === 'wifi') {
+                const s = document.getElementById('val-wifi-ssid').value, p = document.getElementById('val-wifi-pass').value, e = document.getElementById('val-wifi-enc').value;
+                data = s ? `WIFI:T:${e};S:${s};P:${p};;` : "WIFI:Empty";
+            } else if(currInput === 'whatsapp') {
+                const p = document.getElementById('val-wa-phone').value, m = document.getElementById('val-wa-msg').value;
+                data = p ? `https://wa.me/${p}?text=${encodeURIComponent(m)}` : "https://wa.me/";
+            } else if(currInput === 'upi') {
+                const i = document.getElementById('val-upi-id').value, n = document.getElementById('val-upi-name').value;
+                data = i ? `upi://pay?pa=${i}&pn=${encodeURIComponent(n)}` : "upi://pay";
+            }
+        } catch(e) {}
+
+        qrObj.update({
+            data: data,
+            image: logoData,
+            dotsOptions: { color: document.getElementById('col-dots').value, type: document.getElementById('style-dots').value },
+            backgroundOptions: { color: document.getElementById('col-bg').value }
+        });
+    }
+
+    function debouncedUpdate() { clearTimeout(debounceTimer); debounceTimer = setTimeout(updateQR, 300); }
+
+    function handleLogo(inp) {
+        if(inp.files[0]) {
+            const r = new FileReader();
+            r.onload = (e) => { logoData = e.target.result; updateQR(); };
+            r.readAsDataURL(inp.files[0]);
+        } else {
+            logoData = null;
+            updateQR();
+        }
+    }
+
+    function setMode(mode) {
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(`btn-${mode}`).classList.add('active');
+
+        if(mode === 'create') {
+            document.getElementById('create-section').classList.remove('hidden');
+            document.getElementById('scan-section').classList.add('hidden');
+            if(scanner && isScanning) scanner.stop().then(() => isScanning = false).catch(()=>{});
+        } else {
+            document.getElementById('create-section').classList.add('hidden');
+            document.getElementById('scan-section').classList.remove('hidden');
+            startScanner();
+        }
+    }
+
+    function setInputType(btn, type) {
+        currInput = type;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active'); 
+        document.querySelectorAll('.form-group').forEach(f => f.classList.remove('show'));
+        document.getElementById(`form-${type}`).classList.add('show');
+        updateQR(); 
+    }
+
+    function toggleDetails() { document.getElementById('style-content').classList.toggle('open'); }
+    function dlQR(fmt) { qrObj.download({ name: "quickqr", extension: fmt }); }
+    
+    function toggleTheme() {
+        const newTheme = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.body.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+    }
+
+    function startScanner() {
+        document.getElementById('scan-result').classList.add('hidden');
+        document.getElementById('scan-status').innerText = "Starting Camera...";
+        
+        if(!scanner) scanner = new Html5Qrcode("reader");
+        if (isScanning) return;
+
+        const boxSize = window.innerWidth < 400 ? 200 : 250;
+
+        scanner.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: boxSize, height: boxSize } },
+            (txt) => {
+                document.getElementById('scan-text').innerText = txt;
+                document.getElementById('scan-result').classList.remove('hidden');
+                document.getElementById('scan-status').innerText = "✅ Detected";
+                scanner.stop().then(() => isScanning = false).catch(()=>{});
+            },
+            () => {} 
+        ).then(() => {
+            isScanning = true;
+            document.getElementById('scan-status').innerText = "Scanning... Point at QR code";
+        }).catch(() => {
+            document.getElementById('scan-status').innerText = "❌ Camera access blocked (Requires HTTPS).";
+        });
+    }
+
+    function copyScan(btn) {
+        navigator.clipboard.writeText(document.getElementById('scan-text').innerText);
+        const originalText = btn.innerText;
+        btn.innerText = "Copied!";
+        setTimeout(() => btn.innerText = originalText, 2000);
+    }
+
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+    function closeModalOutside(e, id) { if(e.target.id === id) closeModal(id); }
+</script>
+
+</body>
+</html>
