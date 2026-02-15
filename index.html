@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>QuickQRPro - Free Online QR Code Generator & Scanner Tool</title>
+    
+    <meta name="description" content="QuickQRPro is a fast and free online QR code generator and scanner. Create unlimited QR codes instantly or scan images without signup. 100% free.">
+    <meta name="keywords" content="QR code generator, free QR code maker, create QR code online, QR scanner online, upload QR to scan, QuickQRPro">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://mockweb.github.io/QuickQRPro/">
+
+    <meta name="google-adsense-account" content="ca-pub-9908546876820350">
+
+    <meta property="og:title" content="QuickQRPro - Free QR Code Generator & Scanner">
+    <meta property="og:description" content="Generate and scan QR codes instantly online for free. No signup required.">
+    <meta property="og:url" content="https://mockweb.github.io/QuickQRPro/">
+    <meta property="og:type" content="website">
+
+    <meta name="theme-color" content="#4f46e5">
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔳</text></svg>">
+    
+    <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9908546876820350" crossorigin="anonymous"></script>
+
+    <style>
+        :root {
+            --primary: #4f46e5; 
+            --primary-hover: #4338ca;
+            --secondary: #ec4899; 
+            --bg-gradient: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+            --glass: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --text: #1e293b;
+            --text-light: #64748b;
+            --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+            --blur: blur(12px);
+        }
+
+        [data-theme="dark"] {
+            --primary: #818cf8;
+            --primary-hover: #6366f1;
+            --secondary: #f472b6;
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --glass: rgba(30, 41, 59, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text: #f8fafc;
+            --text-light: #94a3b8;
+            --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        
+        body { 
+            font-family: 'Inter', system-ui, sans-serif; 
+            background: var(--bg-gradient); 
+            color: var(--text); 
+            display: flex; 
+            flex-direction: column; 
+            min-height: 100vh; 
+            transition: background 0.3s ease;
+            overflow-x: hidden;
+        }
+
+        nav { 
+            background: var(--glass);
+            backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 12px 5%;
+            display: flex; justify-content: space-between; align-items: center; 
+            position: sticky; top: 0; z-index: 100;
+        }
+        .logo { font-weight: 800; font-size: 1.3rem; background: linear-gradient(to right, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: flex; align-items: center; gap: 8px; text-decoration: none; }
+        .theme-toggle { background: transparent; border: 1px solid var(--glass-border); color: var(--text); width: 38px; height: 38px; border-radius: 50%; cursor: pointer; display: grid; place-items: center; }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 20px 15px; flex: 1; width: 100%; }
+
+        .hero { text-align: center; margin: 10px 0 20px; }
+        .hero h1 { font-size: 2rem; margin-bottom: 10px; line-height: 1.2; }
+        .hero p { color: var(--text-light); font-size: 0.95rem; max-width: 600px; margin: 0 auto; padding: 0 10px; }
+
+        .mode-switch { 
+            display: flex; justify-content: center;
+            background: var(--glass); padding: 5px; border-radius: 50px; 
+            border: 1px solid var(--glass-border); margin: 0 auto 20px auto; max-width: fit-content;
+        }
+        .mode-btn { padding: 10px 25px; border-radius: 40px; border: none; font-weight: 600; cursor: pointer; background: transparent; color: var(--text-light); font-size: 0.95rem; }
+        .mode-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+
+        .grid-layout { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px; align-items: start; }
+
+        .card { 
+            background: var(--glass); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+            border: 1px solid var(--glass-border); border-radius: 20px; padding: 25px; box-shadow: var(--card-shadow);
+            width: 100%; overflow: hidden;
+        }
+        
+        h3 { margin-bottom: 15px; font-size: 1.2rem; font-weight: 700; display: flex; align-items: center; gap: 8px; color: var(--text); }
+
+        .tabs-wrapper { width: 100%; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; -webkit-overflow-scrolling: touch; }
+        .tabs-wrapper::-webkit-scrollbar { display: none; }
+        .input-tabs { display: flex; gap: 8px; width: max-content; }
+        .tab { padding: 8px 14px; border-radius: 10px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05); color: var(--text-light); font-size: 0.9rem; font-weight: 500; white-space: nowrap; cursor: pointer; transition: 0.2s; }
+        .tab.active { border-color: var(--primary); color: var(--primary); background: rgba(79, 70, 229, 0.08); font-weight: 600; }
+
+        .form-group { display: none; }
+        .form-group.show { display: block; animation: fadeIn 0.3s ease; }
+        
+        label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-light); margin: 12px 0 6px; text-transform: uppercase; }
+        input, textarea, select { width: 100%; padding: 12px; border-radius: 10px; border: 2px solid var(--glass-border); background: rgba(255,255,255,0.4); color: var(--text); font-size: 16px; font-family: inherit; outline: none; transition: 0.2s;}
+        [data-theme="dark"] input, [data-theme="dark"] textarea, [data-theme="dark"] select { background: rgba(0,0,0,0.2); }
+        input:focus, textarea:focus { border-color: var(--primary); background: var(--glass); }
+
+        .details-box { margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--glass-border); }
+        .details-summary { cursor: pointer; font-weight: 600; color: var(--primary); display: flex; justify-content: space-between; padding: 5px 0; }
+        .details-content { display: none; padding-top: 10px; animation: slideDown 0.3s ease; }
+        .details-content.open { display: block; }
+
+        .qr-preview-container {
+            background: white; border-radius: 15px; padding: 15px; 
+            display: flex; justify-content: center; align-items: center; 
+            min-height: 280px; width: 100%; box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
+            box-sizing: border-box; overflow: hidden;
+        }
+        #canvas-wrapper { 
+            display: flex; justify-content: center; align-items: center; 
+            width: 100%; max-width: 100%; 
+        }
+        #canvas-wrapper canvas, #canvas-wrapper svg { 
+            width: 100% !important; 
+            max-width: 280px !important; 
+            height: auto !important; 
+            display: block;
+        }
+        
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .btn { padding: 12px; border-radius: 10px; border: none; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: 0.2s; display: inline-flex; justify-content: center; align-items: center; gap: 5px;}
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-outline { background: transparent; border: 2px solid var(--glass-border); color: var(--text); }
+        .btn-upload { background: var(--secondary); color: white; margin-bottom: 15px; width: 100%; }
+
+        #scan-section { max-width: 600px; margin: 0 auto; text-align: center; }
+        #reader { width: 100% !important; max-width: 100%; border-radius: 15px; overflow: hidden; border: 3px solid var(--glass-border); background: #000; margin-bottom: 15px; }
+        #reader video { width: 100% !important; height: auto !important; object-fit: cover; }
+        .scan-result-box { padding: 15px; background: rgba(79, 70, 229, 0.1); border: 1px solid var(--primary); border-radius: 10px; text-align: left; word-wrap: break-word; margin-top: 15px;}
+        
+        /* SEO Content Section for AdSense Approval */
+        .seo-content { margin-top: 50px; padding: 30px; background: var(--glass); border-radius: 20px; border: 1px solid var(--glass-border); line-height: 1.6; }
+        .seo-content h2 { margin-top: 20px; margin-bottom: 10px; font-size: 1.5rem; color: var(--primary); }
+        .seo-content p { color: var(--text-light); margin-bottom: 15px; font-size: 0.95rem; }
+
+        footer { margin-top: 40px; padding: 25px; text-align: center; border-top: 1px solid var(--glass-border); background: var(--glass); }
+        .footer-links a { margin: 0 10px; color: var(--text-light); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; display: inline-block; padding: 5px; }
+        .footer-links a:hover { color: var(--primary); text-decoration: underline; }
+        .copyright { margin-top: 15px; font-size: 0.8rem; color: var(--text-light); opacity: 0.7; }
+
+        @media (max-width: 768px) {
+            .grid-layout { grid-template-columns: 1fr; gap: 15px; }
+            .preview-card { order: -1; }
+            .hero h1 { font-size: 1.6rem; }
+            .card { padding: 20px; }
+        }
+        .hidden { display: none !important; }
+        @keyframes fadeIn { from{opacity:0; transform:translateY(5px);} to{opacity:1; transform:translateY(0);} }
+        @keyframes slideDown { from{opacity:0; transform:translateY(-10px);} to{opacity:1; transform:translateY(0);} }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="index.html" class="logo">QuickQR Pro</a>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">🌓</button>
+</nav>
+
+<div class="container">
+    <div class="hero">
+        <h1>QuickQRPro - Free QR Code Generator & Scanner</h1>
+        <p>Create custom QR codes or scan existing ones from your camera or image gallery. Fast, secure, and mobile-friendly.</p>
+    </div>
+
+    <div class="mode-switch">
+        <button class="mode-btn active" id="btn-create" onclick="setMode('create')">Create QR</button>
+        <button class="mode-btn" id="btn-scan" onclick="setMode('scan')">Scan QR</button>
+    </div>
+
+    <div class="grid-layout" id="create-section">
+        <div class="card preview-card">
+            <h3>Preview</h3>
+            <div class="qr-preview-container">
+                <div id="canvas-wrapper"></div>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-outline" onclick="dlQR('svg')">⬇ SVG</button>
+                <button class="btn btn-primary" onclick="dlQR('png')">⬇ PNG</button>
+            </div>
+        </div>
+
+        <div class="card input-section">
+            <h3>Configuration</h3>
+            <div class="tabs-wrapper">
+                <div class="input-tabs">
+                    <button class="tab active" onclick="setInputType(this, 'text')">📝 Text</button>
+                    <button class="tab" onclick="setInputType(this, 'url')">🔗 URL</button>
+                    <button class="tab" onclick="setInputType(this, 'wifi')">📶 WiFi</button>
+                    <button class="tab" onclick="setInputType(this, 'whatsapp')">💬 WhatsApp</button>
+                    <button class="tab" onclick="setInputType(this, 'upi')">₹ UPI</button>
+                </div>
+            </div>
+
+            <div id="form-text" class="form-group show">
+                <label>Text Content</label>
+                <textarea id="val-text" rows="3" placeholder="Enter text..." onkeyup="debouncedUpdate()"></textarea>
+            </div>
+            <div id="form-url" class="form-group">
+                <label>Website Link</label>
+                <input type="url" id="val-url" placeholder="https://yourwebsite.com" onkeyup="debouncedUpdate()">
+            </div>
+            <div id="form-wifi" class="form-group">
+                <label>Network Name (SSID)</label> <input id="val-wifi-ssid" placeholder="MyHomeWiFi" onkeyup="debouncedUpdate()">
+                <label>Password</label> <input type="text" id="val-wifi-pass" placeholder="Password" onkeyup="debouncedUpdate()">
+                <label>Security</label> 
+                <select id="val-wifi-enc" onchange="updateQR()">
+                    <option value="WPA">WPA/WPA2</option>
+                    <option value="WEP">WEP</option>
+                    <option value="nopass">None</option>
+                </select>
+            </div>
+            <div id="form-whatsapp" class="form-group">
+                <label>Phone Number</label> <input type="number" id="val-wa-phone" placeholder="919999999999" onkeyup="debouncedUpdate()">
+                <label>Message</label> <input type="text" id="val-wa-msg" placeholder="Hi..." onkeyup="debouncedUpdate()">
+            </div>
+            <div id="form-upi" class="form-group">
+                <label>UPI ID</label> <input id="val-upi-id" placeholder="shop@bank" onkeyup="debouncedUpdate()">
+                <label>Payee Name</label> <input id="val-upi-name" placeholder="Store Name" onkeyup="debouncedUpdate()">
+            </div>
+
+            <div class="details-box">
+                <div class="details-summary" onclick="toggleDetails()">
+                    <span>🎨 Advanced Styling & Logo</span> <span>▼</span>
+                </div>
+                <div class="details-content" id="style-content">
+                    <label>Colors (Dot & Background)</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="color" id="col-dots" value="#1e293b" onchange="updateQR()" style="height:45px; cursor:pointer;">
+                        <input type="color" id="col-bg" value="#ffffff" onchange="updateQR()" style="height:45px; cursor:pointer;">
+                    </div>
+                    <label>Pattern Style</label>
+                    <select id="style-dots" onchange="updateQR()">
+                        <option value="rounded">Rounded (Modern)</option>
+                        <option value="dots">Dots (Soft)</option>
+                        <option value="square">Square (Classic)</option>
+                        <option value="classy">Classy</option>
+                        <option value="extra-rounded">Extra Rounded</option>
+                    </select>
+                    <label>Upload Logo (Center Image)</label>
+                    <input type="file" accept="image/*" onchange="handleLogo(this)" style="padding:8px; border:1px dashed var(--text-light); background: transparent; cursor: pointer;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="scan-section" class="card hidden">
+        <h3>📷 Scan or Upload QR Code</h3>
+        <p style="color:var(--text-light); font-size:0.9rem; margin-bottom: 15px;">Point your camera at a QR code or upload an image from your gallery.</p>
+        
+        <label for="qr-upload-input" class="btn btn-upload">📁 Upload QR Image to Scan</label>
+        <input type="file" id="qr-upload-input" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+        
+        <div id="reader"></div>
+        <p id="scan-status" style="font-weight:600; margin-top:10px; color:var(--text-light);">Waiting for camera...</p>
+        
+        <div id="scan-result" class="hidden scan-result-box">
+            <div style="font-size:0.8rem; text-transform:uppercase; color:var(--text-light);">Scanned Data</div>
+            <div id="scan-text" style="font-weight:600; font-size:1.1rem; color:var(--primary); margin:10px 0; word-break: break-all;"></div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="copyScan(this)">Copy Text</button>
+                <button class="btn btn-outline" id="action-btn" onclick="openLink()">Open Link</button>
+            </div>
+            <button class="btn btn-outline" style="width:100%; margin-top:10px;" onclick="startScanner()">Scan Again</button>
+        </div>
+    </div>
+
+    <div class="seo-content">
+        <h2>About QuickQRPro - Your Free QR Code Toolkit</h2>
+        <p>Welcome to <strong>QuickQRPro</strong>, the ultimate all-in-one web platform designed to help you create, customize, and scan QR codes instantly. Whether you need a QR code for your business website, your home WiFi network, a quick WhatsApp message, or UPI payments, our tool provides a seamless experience without asking for any sign-ups or subscriptions.</p>
+        
+        <h2>How to Generate a QR Code?</h2>
+        <p>Creating a QR code is simple. Select your desired data type from the tabs (Text, URL, WiFi, etc.), enter the required information, and watch your custom QR code generate in real-time. You can further personalize your code using our advanced styling options—change colors, modify patterns, or even upload your brand's logo to the center.</p>
+
+        <h2>How to Scan a QR Code Online?</h2>
+        <p>Our built-in web scanner allows you to decode any QR code directly from your browser. Switch to the 'Scan QR' tab to use your device's camera. If you have a QR code saved in your gallery, simply use the <strong>"Upload QR Image"</strong> button to extract the data instantly. It is highly secure, as the scanning process happens right on your device, ensuring your data privacy.</p>
+    </div>
+
+</div>
+
+<footer>
+    <div class="footer-links">
+        <a href="about.html">About Us</a>
+        <a href="contact.html">Contact Us</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Service</a>
+    </div>
+    <div class="copyright">&copy; 2026 QuickQR Pro. Built securely for the web.</div>
+</footer>
+
+<script>
+    let qrObj = null;
+    let logoData = null; 
+    let scanner = null;
+    let isScanning = false;
+    let debounceTimer;
+    let currInput = 'text';
+    let currentScannedData = "";
+
+    window.onload = () => {
+        qrObj = new QRCodeStyling({
+            width: 280, height: 280,
+            type: "svg", data: "Welcome to QuickQR",
+            image: "", 
+            dotsOptions: { color: "#1e293b", type: "rounded" },
+            cornersSquareOptions: { type: "extra-rounded" }, 
+            backgroundOptions: { color: "#ffffff" },
+            imageOptions: { crossOrigin: "anonymous", margin: 10 }
+        });
+        qrObj.append(document.getElementById("canvas-wrapper"));
+
+        if(localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.body.setAttribute('data-theme', 'dark');
+        }
+    };
+
+    function updateQR() {
+        let data = "Welcome to QuickQR"; 
+        try {
+            if(currInput === 'text') data = document.getElementById('val-text').value || "Welcome";
+            else if(currInput === 'url') data = document.getElementById('val-url').value || "https://";
+            else if(currInput === 'wifi') {
+                const s = document.getElementById('val-wifi-ssid').value, p = document.getElementById('val-wifi-pass').value, e = document.getElementById('val-wifi-enc').value;
+                data = s ? `WIFI:T:${e};S:${s};P:${p};;` : "WIFI:Empty";
+            } else if(currInput === 'whatsapp') {
+                const p = document.getElementById('val-wa-phone').value, m = document.getElementById('val-wa-msg').value;
+                data = p ? `https://wa.me/${p}?text=${encodeURIComponent(m)}` : "https://wa.me/";
+            } else if(currInput === 'upi') {
+                const i = document.getElementById('val-upi-id').value, n = document.getElementById('val-upi-name').value;
+                data = i ? `upi://pay?pa=${i}&pn=${encodeURIComponent(n)}` : "upi://pay";
+            }
+        } catch(e) {}
+
+        qrObj.update({
+            data: data,
+            image: logoData,
+            dotsOptions: { color: document.getElementById('col-dots').value, type: document.getElementById('style-dots').value },
+            backgroundOptions: { color: document.getElementById('col-bg').value }
+        });
+    }
+
+    function debouncedUpdate() { clearTimeout(debounceTimer); debounceTimer = setTimeout(updateQR, 300); }
+
+    function handleLogo(inp) {
+        if(inp.files[0]) {
+            const r = new FileReader();
+            r.onload = (e) => { logoData = e.target.result; updateQR(); };
+            r.readAsDataURL(inp.files[0]);
+        } else {
+            logoData = null;
+            updateQR();
+        }
+    }
+
+    function setMode(mode) {
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(`btn-${mode}`).classList.add('active');
+
+        if(mode === 'create') {
+            document.getElementById('create-section').classList.remove('hidden');
+            document.getElementById('scan-section').classList.add('hidden');
+            if(scanner && isScanning) scanner.stop().then(() => isScanning = false).catch(()=>{});
+        } else {
+            document.getElementById('create-section').classList.add('hidden');
+            document.getElementById('scan-section').classList.remove('hidden');
+            startScanner();
+        }
+    }
+
+    function setInputType(btn, type) {
+        currInput = type;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active'); 
+        document.querySelectorAll('.form-group').forEach(f => f.classList.remove('show'));
+        document.getElementById(`form-${type}`).classList.add('show');
+        updateQR(); 
+    }
+
+    function toggleDetails() { document.getElementById('style-content').classList.toggle('open'); }
+    function dlQR(fmt) { qrObj.download({ name: "quickqr", extension: fmt }); }
+    
+    function toggleTheme() {
+        const newTheme = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        document.body.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+    }
+
+    function showScanResult(txt) {
+        currentScannedData = txt;
+        document.getElementById('scan-text').innerText = txt;
+        document.getElementById('scan-result').classList.remove('hidden');
+        
+        const actionBtn = document.getElementById('action-btn');
+        if(txt.startsWith('http://') || txt.startsWith('https://')) {
+            actionBtn.style.display = 'inline-block';
+            actionBtn.innerText = "Open URL";
+        } else if(txt.startsWith('upi://')) {
+            actionBtn.style.display = 'inline-block';
+            actionBtn.innerText = "Pay via UPI App";
+        } else {
+            actionBtn.style.display = 'none';
+        }
+    }
+
+    function startScanner() {
+        document.getElementById('scan-result').classList.add('hidden');
+        document.getElementById('scan-status').innerText = "Starting Camera...";
+        
+        if(!scanner) scanner = new Html5Qrcode("reader");
+        if (isScanning) return;
+
+        const boxSize = window.innerWidth < 400 ? 200 : 250;
+
+        scanner.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: boxSize, height: boxSize } },
+            (txt) => {
+                showScanResult(txt);
+                document.getElementById('scan-status').innerText = "✅ Detected from Camera";
+                scanner.stop().then(() => isScanning = false).catch(()=>{});
+            },
+            () => {} 
+        ).then(() => {
+            isScanning = true;
+            document.getElementById('scan-status').innerText = "Scanning... Point at QR code";
+        }).catch(() => {
+            document.getElementById('scan-status').innerText = "❌ Camera access blocked. You can upload an image instead.";
+        });
+    }
+
+    // New Image Upload Logic
+    function handleImageUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        document.getElementById('scan-status').innerText = "Analyzing image...";
+        if(scanner && isScanning) {
+            scanner.stop().then(() => { isScanning = false; scanUploadedFile(file); }).catch(()=>{});
+        } else {
+            scanUploadedFile(file);
+        }
+    }
+
+    function scanUploadedFile(file) {
+        const tempScanner = new Html5Qrcode("reader");
+        tempScanner.scanFile(file, true)
+        .then(qrCodeMessage => {
+            showScanResult(qrCodeMessage);
+            document.getElementById('scan-status').innerText = "✅ Detected from Image";
+        })
+        .catch(err => {
+            document.getElementById('scan-status').innerText = "❌ No QR code found in the image. Try again.";
+        });
+        document.getElementById('qr-upload-input').value = ""; // Reset input
+    }
+
+    function copyScan(btn) {
+        navigator.clipboard.writeText(currentScannedData);
+        const originalText = btn.innerText;
+        btn.innerText = "Copied!";
+        setTimeout(() => btn.innerText = originalText, 2000);
+    }
+    
+    function openLink() {
+        window.open(currentScannedData, '_blank');
+    }
+</script>
+
+</body>
+</html>
